@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mystery Vending Machine</title>
+<style>
+:root{--ink:#29243f}*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px 14px 42px;display:flex;justify-content:center;font-family:system-ui,sans-serif;color:var(--ink);background:radial-gradient(circle at 12% 8%,#ffe2ed,transparent 29%),radial-gradient(circle at 90% 12%,#dff8ff,transparent 30%),linear-gradient(135deg,#fff8e9,#f0eaff)}main{width:min(1000px,100%);text-align:center}.tag{display:inline-block;border:1px solid #e8def6;background:#ffffffb8;padding:8px 14px;border-radius:99px;font-size:12px;font-weight:900;letter-spacing:.12em}h1{font-size:clamp(38px,7vw,68px);letter-spacing:-.055em;line-height:1;margin:16px 0 10px}.subtitle{max-width:590px;margin:0 auto 25px;color:#706a84;line-height:1.6}.machine{width:min(590px,100%);margin:auto;padding:18px;background:linear-gradient(145deg,#ff9dbc,#b99aff);border:5px solid white;border-radius:32px;box-shadow:0 22px 55px #55417b30}.header{display:flex;justify-content:space-between;padding:2px 8px 15px;color:white;font-size:13px;font-weight:1000;letter-spacing:.1em}.lights{display:flex;gap:7px}.lights i{width:10px;height:10px;border-radius:50%;background:#fff5a8;box-shadow:0 0 10px #fff}.display{background:#e9fbff;border:6px solid white;border-radius:18px;padding:13px;margin-bottom:14px}.display-label{font-size:10px;letter-spacing:.16em;font-weight:1000;color:#8c78b1}.display-message{font-size:20px;font-weight:950;margin:4px 0 0;min-height:29px}.window{background:linear-gradient(#e9fbff,#f8f4ff);border:6px solid #fff;border-radius:18px;padding:16px 12px 10px}.shelf{display:grid;grid-template-columns:repeat(9,1fr);gap:7px 5px}.item{aspect-ratio:1;border-radius:50%;border:2px solid #ffffffd9;background:var(--c);box-shadow:inset -5px -6px 0 #00000012;display:grid;place-items:center;font-size:clamp(13px,2.5vw,20px);font-weight:1000;color:#51476c;transition:transform .25s,opacity .25s}.item.dispensed{opacity:.12;transform:scale(.5)}.slot-label{font-size:10px;color:#8b83a0;font-weight:850;letter-spacing:.13em;margin:11px 0 2px}.lower{display:grid;grid-template-columns:1fr 115px;gap:12px;margin-top:14px}.keypad{background:#f9f5ff;border:5px solid white;border-radius:16px;padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.key{border:0;border-radius:10px;padding:10px 0;background:linear-gradient(145deg,#e7dcff,#d8f4ff);color:#594c7b;font-weight:1000;font-size:17px;box-shadow:0 3px 0 #b5a5d5}.coin-panel{background:#f9f5ff;border:5px solid white;border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px}.coin{width:38px;height:38px;border-radius:50%;background:linear-gradient(145deg,#fff0a3,#ffc65e);border:4px solid white;display:grid;place-items:center}.coin-label{font-size:9px;font-weight:1000;color:#756b91}.dispense-row{display:flex;justify-content:center;margin-top:13px}.dispense{border:0;border-radius:999px;padding:15px 28px;background:linear-gradient(110deg,#fff0a5,#ffce70);color:#49395f;font-size:16px;font-weight:1000;cursor:pointer;box-shadow:0 6px 0 #bd8b58}.dispense:disabled{opacity:.6;cursor:wait}.music-row{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 0;color:#fff;font-size:11px;font-weight:750}.music-toggle{border:2px solid #ffffffc9;border-radius:99px;background:#ffffffdf;color:#51446f;padding:8px 14px;font-weight:900;cursor:pointer}.chute{height:67px;width:210px;max-width:75%;margin:13px auto 0;background:#64558e;border:5px solid white;border-radius:13px 13px 22px 22px;display:flex;justify-content:center;align-items:center;color:#d9d0f5;font-size:10px;font-weight:1000;letter-spacing:.15em}.capsule{font-size:28px;animation:bounce .55s ease-in-out 2}@keyframes bounce{50%{transform:translateY(-9px) rotate(10deg)}}.result{max-width:590px;margin:20px auto 0;padding:23px;background:#ffffffc9;border:1px solid white;border-radius:24px;min-height:185px;text-align:left}.kicker{font-size:11px;letter-spacing:.14em;font-weight:1000;color:#8c78b1}.result h2{font-size:clamp(24px,4vw,34px);margin:9px 0 10px;line-height:1.2;overflow-wrap:anywhere}.result p{color:#706a84;line-height:1.6;margin:0 0 16px}.visit{display:none;text-decoration:none;background:#29233f;color:white;padding:11px 17px;border-radius:12px;font-weight:850}.visit.show{display:inline-block}.footer{font-size:12px;color:#928aa5;margin-top:17px}@media(max-width:480px){.machine{padding:12px}.shelf{gap:5px 3px}.window{padding:12px 7px 8px}.lower{grid-template-columns:1fr 88px}.keypad{padding:8px;gap:5px}.key{padding:9px 0}}
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+:root {
+  --ink: #f8f0ff;
+}
+
+body {
+  background:
+    linear-gradient(#ffffff08 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff08 1px, transparent 1px),
+    radial-gradient(circle at center, #241044, #09051a 85%);
+  background-size: 4px 4px, 4px 4px, auto;
+  color: #fff;
+  font-family: 'VT323', monospace;
+}
+
+h1 {
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(23px, 5vw, 42px);
+  line-height: 1.6;
+  color: #ff4fd8;
+  text-shadow:
+    3px 3px #5520a0,
+    0 0 12px #ff4fd8,
+    0 0 25px #ff4fd8;
+  letter-spacing: 0;
+}
+
+.machine {
+  background: #17102e;
+  border: 5px solid #38f6ff;
+  border-radius: 8px;
+  box-shadow:
+    0 0 10px #38f6ff,
+    0 0 25px #38f6ff66,
+    10px 10px 0 #09051a;
+}
+
+.header {
+  color: #ffe66d;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 9px;
+}
+
+.lights i {
+  background: #ff4fd8;
+  box-shadow: 0 0 12px #ff4fd8;
+}
+
+.lights i:nth-child(even) {
+  background: #38f6ff;
+  box-shadow: 0 0 12px #38f6ff;
+}
+
+.display {
+  background: #080e1d;
+  border: 4px solid #ff4fd8;
+  border-radius: 4px;
+  box-shadow: inset 0 0 15px #38f6ff44;
+}
+
+.display-label,
+.kicker {
+  color: #38f6ff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 9px;
+  line-height: 1.8;
+}
+
+.display-message {
+  color: #ffe66d;
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(10px, 2vw, 16px);
+  line-height: 1.8;
+  text-shadow: 0 0 9px #ffe66d;
+}
+
+.window {
+  background: #090d20;
+  border: 4px solid #38f6ff;
+  border-radius: 4px;
+  box-shadow: inset 0 0 18px #38f6ff33;
+}
+
+.item {
+  border: 2px solid #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 8px #ffffff66;
+  color: #17102e;
+  image-rendering: pixelated;
+}
+
+.slot-label {
+  color: #38f6ff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  line-height: 2;
+}
+
+.keypad,
+.coin-panel {
+  background: #100b25;
+  border: 3px solid #ff4fd8;
+  border-radius: 4px;
+}
+
+.key {
+  background: #241447;
+  border: 2px solid #38f6ff;
+  border-radius: 3px;
+  color: #38f6ff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 12px;
+  box-shadow: 0 4px 0 #116a82;
+  cursor: pointer;
+}
+
+.key:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+.coin {
+  background: #ffe66d;
+  border: 3px solid #fff;
+  box-shadow: 0 0 12px #ffe66d;
+}
+
+.coin-label {
+  color: #38f6ff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 7px;
+  line-height: 1.8;
+}
+
+.dispense {
+  background: #ff4fd8;
+  color: #160b2c;
+  border: 3px solid #fff;
+  border-radius: 4px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+  line-height: 1.8;
+  box-shadow: 0 5px 0 #92258a, 0 0 15px #ff4fd8;
+  cursor: pointer;
+}
+
+.dispense:hover {
+  background: #ffe66d;
+  box-shadow: 0 5px 0 #a87919, 0 0 20px #ffe66d;
+}
+
+.music-row {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  color: #38f6ff;
+}
+
+.music-toggle {
+  background: #100b25;
+  border: 2px solid #38f6ff;
+  border-radius: 4px;
+  color: #38f6ff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  padding: 12px;
+  box-shadow: 0 0 10px #38f6ff66;
+}
+
+.chute {
+  background: #080e1d;
+  border: 4px solid #ff4fd8;
+  border-radius: 4px;
+  color: #38f6ff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  line-height: 1.8;
+  box-shadow: inset 0 0 12px #ff4fd844;
+}
+
+.result {
+  background: #100b25;
+  border: 3px solid #38f6ff;
+  border-radius: 5px;
+  box-shadow: 0 0 18px #38f6ff44;
+  color: #fff;
+}
+
+.result h2 {
+  color: #ffe66d;
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(13px, 2.5vw, 20px);
+  line-height: 1.8;
+}
+
+.result p {
+  color: #d6c8f5;
+  font-size: 22px;
+}
+
+.visit {
+  background: #ff4fd8;
+  color: #160b2c;
+  border: 2px solid white;
+  border-radius: 4px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 20px;
+  line-height: 1.8;
+}
+
+.footer {
+  color: #38f6ff;
+}
+.machine {
+  position: relative;
+}
+
+.music-row {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  margin: 0;
+  z-index: 5;
+}
+
+.music-toggle {
+  padding: 9px 12px;
+  font-size: 10px;
+}
+
+@media (max-width: 480px) {
+  .music-row {
+    top: 9px;
+    right: 9px;
+  }
+
+  .music-toggle {
+    font-size: 7px;
+    padding: 7px;
+  }
+}
+
+/* POPUP BACKGROUND */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 3, 20, 0.82);
+  backdrop-filter: blur(6px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 9999;
+}
+
+/* SHOW POPUP */
+.popup-overlay.show {
+  display: flex;
+  animation: overlayFade 0.3s ease;
+}
+
+/* POPUP WINDOW */
+.popup-card {
+  position: relative;
+  width: min(500px, 100%);
+  margin: 0;
+  padding: 35px 25px;
+  text-align: center;
+  background: #100b25;
+  border: 3px solid #38f6ff;
+  border-radius: 5px;
+  box-shadow:
+    0 0 12px #38f6ff,
+    0 0 30px #ff4fd8,
+    inset 0 0 20px #38f6ff22;
+  animation: popupZoom 0.45s cubic-bezier(.17,.89,.32,1.4);
+}
+
+/* CLOSE BUTTON */
+.popup-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: 2px solid #ff4fd8;
+  color: #ff4fd8;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 5px 9px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.popup-close:hover {
+  background: #ff4fd8;
+  color: #100b25;
+}
+
+/* POPUP ANIMATIONS */
+@keyframes popupZoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-8deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.08) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+body:has(.popup-overlay.show) {
+  overflow: hidden;
+}
+</style></head><body><main><h1>Mystery Vending Machine</h1><br><br>
+<section class="machine"><div class="header"><span class="lights"><i></i><i></i><i></i><i></i><i></i></span></div><div class="display"><div class="display-message" id="machineMessage">READY TO SURPRISE YOU!</div></div><div class="window"><div class="shelf" id="shelf"></div><div class="slot-label">MYSTERY ITEMS</div></div><div class="lower"><div class="keypad"><button class="key">1</button><button class="key">2</button><button class="key">3</button><button class="key">4</button><button class="key">5</button><button class="key">6</button><button class="key">7</button><button class="key">0</button><button class="key">9</button></div><div class="coin-panel"><div class="coin">★</div><div class="coin-label">VIRTUAL<br>COIN SLOT</div><div>⬇️</div></div></div><div class="dispense-row"><button class="dispense" id="dispense">INSERT COIN & DISPENSE</button></div><div class="music-row"><button class="music-toggle" id="musicToggle">♫ Turn music on</button></div><div class="chute" id="chute">PRIZE COLLECTION</div></section>
+<div class="popup-overlay" id="resultPopup">
+  <section class="result popup-card" aria-live="polite">
+    <button class="popup-close" id="closePopup">✕</button>
+    <div class="kicker">★ YOUR MYSTERY ITEM ★</div>
+    <h2 id="resultTitle">Nothing revealed… yet!</h2>
+    <p id="resultDesc">Insert a virtual coin and let the machine choose a surprise for you.</p>
+    <a class="visit" id="visit" href="#" target="_blank" rel="noopener noreferrer">Visit website ↗</a>
+  </section>
+</div><p class="footer"></p></main>
+<script>
+const prizes=[
+{kind:'site',name:'The Little Daily',url:'https://thelittledaily.com/'},{kind:'site',name:'Consult Your Guardian Angel',url:'https://www.consultyourguardianangel.com/'},{kind:'site',name:'Histography',url:'https://histography.io/'},{kind:'site',name:'Floor 796',url:'https://floor796.com/'},{kind:'site',name:'Windows 93',url:'https://www.windows93.net/'},{kind:'site',name:"Anna's Garden",url:'https://annasgarden.vercel.app/'},{kind:'site',name:'The Useless Web',url:'https://theuselessweb.com/'},{kind:'site',name:'Gradient Horse',url:'https://gradient.horse/'},{kind:'site',name:'Window Swap',url:'https://www.window-swap.com/homebg.bdedf07b6de502dd8e8a.gif'},{kind:'site',name:'Neal.fun',url:'https://neal.fun/'},{kind:'site',name:'A Soft Murmur',url:'https://asoftmurmur.com/'},{kind:'site',name:'Slow Roads',url:'https://slowroads.io/'},{kind:'site',name:'Murdle',url:'https://murdle.com/'},{kind:'site',name:'Messenger',url:'https://messenger.abeto.co/'},{kind:'site',name:'Roombox Design',url:'https://www.crazygames.com/game/roombox-design?utm_source=Pinterest&utm_medium=organic'},{kind:'site',name:'Narinig Mo Ba',url:'https://doppie.itch.io/narinig-mo-ba'},{kind:'site',name:'Cook',url:'https://r74n.com/cook/?utm_source=Pinterest&utm_medium=organic'},{kind:'site',name:'Palm Cracker',url:'https://gamaverse.com/palm-cracker-game/?utm_source=Pinterest&utm_medium=organic#google_vignette'},
+{kind:'quote',name:"Life is like a door, never trust a cow because the sun can't swim."},{kind:'quote',name:'Whatever life throws at you, duck and let it hit someone else.'},{kind:'quote',name:'I failed as a person… I am a dinosaur now.'},{kind:'quote',name:'When nothing goes right… GO LEFT!!'},{kind:'quote',name:'Today todayed the today out of me.'},{kind:'quote',name:"Due to personal reasons, I'm evil now…"},{kind:'quote',name:'Hocus Pocus, you lost your focus.'},{kind:'quote',name:'I send you luck in a form of duck.'},{kind:'quote',name:'A wise man once said nothing.'}];
+for(let i=prizes.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[prizes[i],prizes[j]]=[prizes[j],prizes[i]]}const colors=['#ff9fbd','#ffd978','#8fe1ee','#b9a0ff','#a9e7bd','#ffc18b','#f5a9e6'];const shelf=document.getElementById('shelf');let remaining=prizes.map((_,i)=>i),busy=false;prizes.forEach((_,i)=>{const el=document.createElement('div');el.className='item';el.textContent='?';el.style.setProperty('--c',colors[i%colors.length]);shelf.appendChild(el)});const button=document.getElementById('dispense'),message=document.getElementById('machineMessage'),chute=document.getElementById('chute'),wait=ms=>new Promise(r=>setTimeout(r,ms));
+const resultPopup = document.getElementById('resultPopup');
+
+document.getElementById('closePopup').addEventListener('click', () => {
+  resultPopup.classList.remove('show');
+});
+
+resultPopup.addEventListener('click', (e) => {
+  if (e.target === resultPopup) {
+    resultPopup.classList.remove('show');
+  }
+});
+button.addEventListener('click',async()=>{if(busy||!remaining.length)return;busy=true;button.disabled=true;document.getElementById('resultTitle').textContent='The machine is choosing…';document.getElementById('resultDesc').textContent='Something mysterious is on its way down the chute.';document.getElementById('visit').classList.remove('show');message.textContent='COIN ACCEPTED…';chute.textContent='PROCESSING…';await wait(650);message.textContent='SELECTING YOUR SURPRISE…';await wait(850);const at=Math.floor(Math.random()*remaining.length),idx=remaining[at],el=shelf.children[idx];el.classList.add('dispensed');chute.innerHTML='<span class="capsule">🎁</span>';await wait(950);const prize=prizes[idx];document.getElementById('resultTitle').textContent=prize.kind==='site'?prize.name:'A mystery quote!';document.getElementById('resultDesc').textContent=prize.kind==='site'?'Your surprise is a website! Open it and see what you discover.':'“'+prize.name+'”';if(prize.kind==='site'){
+  const a=document.getElementById('visit');
+  a.href=prize.url;
+  a.classList.add('show');
+}
+
+resultPopup.classList.add('show');remaining.splice(at,1);message.textContent='SURPRISE DISPENSED!';chute.innerHTML='<span class="capsule">✨</span>';if(!remaining.length){button.textContent='SOLD OUT — REFRESH TO PLAY AGAIN';message.textContent='ALL 27 SURPRISES DISPENSED!'}else{button.textContent=`INSERT COIN & DISPENSE (${remaining.length} LEFT)`;button.disabled=false}busy=false});
+// Original synthesized chiptune; it starts only after the user taps the music control.
+const musicToggle = document.getElementById('musicToggle');
+
+const audio = new Audio('bg-music.mp3');
+audio.loop = true;
+audio.volume = 0.4;
+
+let musicOn = false;
+
+musicToggle.addEventListener('click', async () => {
+  if (musicOn) {
+    audio.pause();
+    musicOn = false;
+    musicToggle.textContent = '♫ Turn music on';
+  } else {
+    try {
+      await audio.play();
+      musicOn = true;
+      musicToggle.textContent = '♫ Turn music off';
+    } catch (error) {
+      musicToggle.textContent = '♫ Tap to try again';
+    }
+  }
+});
+</script></body></html>
